@@ -12,6 +12,9 @@ namespace Lexicon
             Run();
         }
 
+        /**
+         * Menu loop
+         */
         private static void Run()
         {
             bool show = true;
@@ -19,17 +22,23 @@ namespace Lexicon
                 show = Menu();
         }
 
-        private static string[] menuItems =
+        /**
+         * Menu intems
+         */
+        private static readonly string[] menuItems =
         {
-            "Add a to b (a + b)",
-            "Divide a by b (a / b)",
-            "Subtract b from a (a - b)",
-            "Multiply a with b (a * b)",
-            "Take to power of b to a (a ^ b)",
-            "Take the b root of a (a ^ (1 / b))",
-            "Take modulo b of a (a % b)"
+            "Add a to b (a + b)",                   //1
+            "Divide a by b (a / b)",                //2
+            "Subtract b from a (a - b)",            //3
+            "Multiply a with b (a * b)",            //4
+            "Take to power of b to a (a ^ b)",      //5
+            "Take the b root of a (a ^ (1 / b))",   //6
+            "Take modulo b of a (a % b)"            //7
         };
 
+        /**
+         * Menu
+         */
         private static bool Menu()
         {
             WriteLine("[Lexicon C#/.Net Programming] Assignment 1 - Calculator \n");
@@ -62,63 +71,65 @@ namespace Lexicon
             };
         }
 
-        private static bool HandleOperation(string operation, Func<double, double, double> MathOp)
+        /**
+         * Handles the calls fom menu
+         * Read input
+         * Try math operation and write output
+         * Handle exceptions
+         */
+        private static bool HandleOperation(string message, Func<double, double, double> mathOperation)
         {
-            Console.WriteLine(operation);
+            WriteLine(message);
             double a = ReadNumber<double>("Input a", "a must be a number");
             double b = ReadNumber<double>("Input b", "b must be a number");
-            double result;
+            
             try
             {
-                result = MathOp(a, b);
-                WriteLine("=> " + Math.Round(MathOp(a, b), 4).ToString());
+                WriteLine("=> " + Math.Round(mathOperation(a, b), 4).ToString());
             }
             catch (Exception ex)
             {
                 if (ex is DivideByZeroException)
-                {
                     WriteLine("Cannot divide by Zero.");
-                } else
-                {
+                else
                     WriteLine(ex.ToString());
-                }
             }
 
-            return HoldForInput();
+            return HoldAndClear();
         }
 
-        private static bool HoldForInput(string msg = "\n\tPress any key to continue...")
+        /**
+         * Hold for key and clear console
+         */
+        private static bool HoldAndClear(string message = "\n\tPress any key to continue...")
         {
-            Write(msg);
+            Write(message);
             ReadKey();
             Clear();
             return true;
         }
 
+        /**
+         * Read number from input
+         * Templated for different types
+         * Asks for new input if input of wrong type (convert fails)
+         */
         private static T ReadNumber<T>(
-            string msg = "Input a number",
-            string err = "You must input a number"
-            )
+            string message = "Input a number", 
+            string error = "You must input a number")
         {
-            T num;
-            string input;
-
             TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
 
-            Write($"{msg}\n> ");
+            Write($"{message}\n> ");
             while (true)
-            {
-                input = ReadLine();
-                try
-                {
-                    num = (T)converter.ConvertFromString(input);
-                    return num;
+                try 
+                { 
+                    return (T)converter.ConvertFromString(ReadLine()); 
                 }
-                catch
+                catch 
                 {
-                    Write($"{err}\n> ");
+                    Write($"{error}\n> ");
                 }
-            }
         }
     }
 }
